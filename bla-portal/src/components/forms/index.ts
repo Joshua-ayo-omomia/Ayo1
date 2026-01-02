@@ -1,2 +1,2 @@
-// Form components
-// Export form components as they are created
+export { DocumentUpload } from './DocumentUpload';
+export type { DocumentUploadProps, DocumentType, AcceptedFormat } from './DocumentUpload';
