@@ -51,6 +51,15 @@ CREATE TYPE test_type AS ENUM (
   'driving_test'
 );
 
+CREATE TYPE notification_type AS ENUM (
+  'application_update',
+  'document_request',
+  'appointment_reminder',
+  'test_result',
+  'licence_expiry',
+  'general'
+);
+
 -- ============================================
 -- TABLES
 -- ============================================
@@ -118,6 +127,39 @@ CREATE TABLE test_results (
   UNIQUE(application_id, test_type)
 );
 
+-- Notifications table
+CREATE TABLE notifications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  type notification_type NOT NULL,
+  title TEXT NOT NULL,
+  message TEXT NOT NULL,
+  link TEXT,
+  read BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Notification Preferences table
+CREATE TABLE notification_preferences (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE UNIQUE,
+  email_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+  sms_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+  application_update BOOLEAN NOT NULL DEFAULT TRUE,
+  document_request BOOLEAN NOT NULL DEFAULT TRUE,
+  appointment_reminder BOOLEAN NOT NULL DEFAULT TRUE,
+  test_result BOOLEAN NOT NULL DEFAULT TRUE,
+  licence_expiry BOOLEAN NOT NULL DEFAULT TRUE,
+  general BOOLEAN NOT NULL DEFAULT TRUE,
+  email_application_update BOOLEAN NOT NULL DEFAULT TRUE,
+  email_document_request BOOLEAN NOT NULL DEFAULT TRUE,
+  email_appointment_reminder BOOLEAN NOT NULL DEFAULT TRUE,
+  email_test_result BOOLEAN NOT NULL DEFAULT TRUE,
+  email_licence_expiry BOOLEAN NOT NULL DEFAULT TRUE,
+  email_general BOOLEAN NOT NULL DEFAULT FALSE,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- ============================================
 -- INDEXES
 -- ============================================
@@ -130,6 +172,10 @@ CREATE INDEX idx_documents_status ON documents(status);
 CREATE INDEX idx_appointments_application_id ON appointments(application_id);
 CREATE INDEX idx_appointments_scheduled_date ON appointments(scheduled_date);
 CREATE INDEX idx_test_results_application_id ON test_results(application_id);
+CREATE INDEX idx_notifications_user_id ON notifications(user_id);
+CREATE INDEX idx_notifications_read ON notifications(read);
+CREATE INDEX idx_notifications_created_at ON notifications(created_at DESC);
+CREATE INDEX idx_notification_preferences_user_id ON notification_preferences(user_id);
 
 -- ============================================
 -- FUNCTIONS
@@ -163,6 +209,8 @@ ALTER TABLE applications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE documents ENABLE ROW LEVEL SECURITY;
 ALTER TABLE appointments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE test_results ENABLE ROW LEVEL SECURITY;
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE notification_preferences ENABLE ROW LEVEL SECURITY;
 
 -- Users policies
 CREATE POLICY "Users can view own profile"
@@ -224,6 +272,32 @@ CREATE POLICY "Users can view own test results"
       SELECT user_id FROM applications WHERE id = application_id
     )
   );
+
+-- Notifications policies
+CREATE POLICY "Users can view own notifications"
+  ON notifications FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own notifications"
+  ON notifications FOR UPDATE
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own notifications"
+  ON notifications FOR DELETE
+  USING (auth.uid() = user_id);
+
+-- Notification Preferences policies
+CREATE POLICY "Users can view own notification preferences"
+  ON notification_preferences FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can create own notification preferences"
+  ON notification_preferences FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own notification preferences"
+  ON notification_preferences FOR UPDATE
+  USING (auth.uid() = user_id);
 
 -- ============================================
 -- STORAGE BUCKETS

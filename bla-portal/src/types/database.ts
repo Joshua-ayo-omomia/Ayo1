@@ -24,6 +24,14 @@ export type AppointmentStatus = 'scheduled' | 'completed' | 'cancelled' | 'no_sh
 
 export type TestType = 'regulations_test' | 'driving_test';
 
+export type NotificationType =
+  | 'application_update'
+  | 'document_request'
+  | 'appointment_reminder'
+  | 'test_result'
+  | 'licence_expiry'
+  | 'general';
+
 // Table Row Types
 export interface User {
   id: string;
@@ -72,6 +80,37 @@ export interface TestResult {
   score: number | null;
   passed: boolean;
   completed_at: string;
+}
+
+export interface Notification {
+  id: string;
+  user_id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  link: string | null;
+  read: boolean;
+  created_at: string;
+}
+
+export interface NotificationPreferences {
+  id: string;
+  user_id: string;
+  email_enabled: boolean;
+  sms_enabled: boolean;
+  application_update: boolean;
+  document_request: boolean;
+  appointment_reminder: boolean;
+  test_result: boolean;
+  licence_expiry: boolean;
+  general: boolean;
+  email_application_update: boolean;
+  email_document_request: boolean;
+  email_appointment_reminder: boolean;
+  email_test_result: boolean;
+  email_licence_expiry: boolean;
+  email_general: boolean;
+  updated_at: string;
 }
 
 // Insert Types (for creating new records)
@@ -124,6 +163,36 @@ export interface TestResultInsert {
   completed_at?: string;
 }
 
+export interface NotificationInsert {
+  id?: string;
+  user_id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  link?: string | null;
+  read?: boolean;
+  created_at?: string;
+}
+
+export interface NotificationPreferencesInsert {
+  id?: string;
+  user_id: string;
+  email_enabled?: boolean;
+  sms_enabled?: boolean;
+  application_update?: boolean;
+  document_request?: boolean;
+  appointment_reminder?: boolean;
+  test_result?: boolean;
+  licence_expiry?: boolean;
+  general?: boolean;
+  email_application_update?: boolean;
+  email_document_request?: boolean;
+  email_appointment_reminder?: boolean;
+  email_test_result?: boolean;
+  email_licence_expiry?: boolean;
+  email_general?: boolean;
+}
+
 // Update Types (for updating existing records)
 export interface UserUpdate {
   email?: string;
@@ -160,6 +229,27 @@ export interface TestResultUpdate {
   passed?: boolean;
 }
 
+export interface NotificationUpdate {
+  read?: boolean;
+}
+
+export interface NotificationPreferencesUpdate {
+  email_enabled?: boolean;
+  sms_enabled?: boolean;
+  application_update?: boolean;
+  document_request?: boolean;
+  appointment_reminder?: boolean;
+  test_result?: boolean;
+  licence_expiry?: boolean;
+  general?: boolean;
+  email_application_update?: boolean;
+  email_document_request?: boolean;
+  email_appointment_reminder?: boolean;
+  email_test_result?: boolean;
+  email_licence_expiry?: boolean;
+  email_general?: boolean;
+}
+
 // Database Schema Type (for Supabase client)
 export interface Database {
   public: {
@@ -189,6 +279,16 @@ export interface Database {
         Insert: TestResultInsert;
         Update: TestResultUpdate;
       };
+      notifications: {
+        Row: Notification;
+        Insert: NotificationInsert;
+        Update: NotificationUpdate;
+      };
+      notification_preferences: {
+        Row: NotificationPreferences;
+        Insert: NotificationPreferencesInsert;
+        Update: NotificationPreferencesUpdate;
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -200,6 +300,7 @@ export interface Database {
       appointment_type: AppointmentType;
       appointment_status: AppointmentStatus;
       test_type: TestType;
+      notification_type: NotificationType;
     };
   };
 }
