@@ -1,101 +1,162 @@
-import Image from "next/image";
+import { FileText, Car, RefreshCw } from 'lucide-react';
+import { Footer } from '@/components/layout';
 
-export default function Home() {
+// Hero Section
+function HeroSection() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
+    <section className="min-h-[90vh] flex items-center justify-center bg-white px-6">
+      <div className="max-w-4xl mx-auto text-center">
+        <h1 className="text-[56px] leading-[1.1] font-semibold tracking-tight text-[#0a2540] mb-6">
+          Driver Licensing. Simplified.
+        </h1>
+        <p className="text-xl text-[#425466] max-w-[600px] mx-auto mb-10 leading-relaxed">
+          Apply for permits, book tests, and renew your licence online. Fast, secure, and paperless.
+        </p>
+        <div className="flex items-center justify-center gap-4">
           <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#"
+            className="inline-flex items-center justify-center h-12 px-8 bg-[#0a2540] text-white font-medium rounded-lg hover:bg-[#1a3a5c] transition-colors"
           >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
+            Get Started
           </a>
           <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#"
+            className="inline-flex items-center justify-center h-12 px-8 bg-transparent text-[#0a2540] font-medium rounded-lg border border-[#e6ebf1] hover:border-[#0a2540] transition-colors"
           >
-            Read our docs
+            Learn More
           </a>
         </div>
+      </div>
+    </section>
+  );
+}
+
+// Service Card Component
+function ServiceCard({
+  icon: Icon,
+  title,
+  description,
+}: {
+  icon: React.ElementType;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="bg-white rounded-xl border border-[#e6ebf1] p-8 hover:shadow-lg hover:border-[#d4a012]/30 transition-all duration-300">
+      <div className="w-12 h-12 rounded-lg bg-[#f6f9fc] flex items-center justify-center mb-6">
+        <Icon className="w-6 h-6 text-[#0a2540]" />
+      </div>
+      <h3 className="text-lg font-semibold text-[#0a2540] mb-3">{title}</h3>
+      <p className="text-[#425466] text-sm leading-relaxed">{description}</p>
+    </div>
+  );
+}
+
+// Services Section
+function ServicesSection() {
+  const services = [
+    {
+      icon: FileText,
+      title: "Learner's Permit",
+      description:
+        'Start your driving journey. Apply for your learner\'s permit online and book your written test in minutes.',
+    },
+    {
+      icon: Car,
+      title: "Driver's Licence",
+      description:
+        'Ready to hit the road? Schedule your practical driving test and get your full licence.',
+    },
+    {
+      icon: RefreshCw,
+      title: 'Licence Renewal',
+      description:
+        'Keep your licence current. Renew online before expiry and receive your new card by mail.',
+    },
+  ];
+
+  return (
+    <section className="py-16 md:py-24 bg-[#f6f9fc] px-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-16">
+          <span className="inline-block text-xs font-semibold tracking-widest text-[#d4a012] uppercase mb-4">
+            Services
+          </span>
+          <h2 className="text-3xl md:text-4xl font-semibold text-[#0a2540]">
+            Everything you need, online
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {services.map((service) => (
+            <ServiceCard key={service.title} {...service} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Stat Item Component
+function StatItem({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="text-center">
+      <div className="text-5xl font-semibold text-[#0a2540] mb-2">{value}</div>
+      <div className="text-[15px] text-[#8898aa]">{label}</div>
+    </div>
+  );
+}
+
+// Stats Section
+function StatsSection() {
+  const stats = [
+    { value: '50,000+', label: 'Licences Issued' },
+    { value: '24hr', label: 'Average Processing' },
+    { value: '99.9%', label: 'System Uptime' },
+  ];
+
+  return (
+    <section className="py-16 md:py-24 bg-white px-6">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-24">
+          {stats.map((stat) => (
+            <StatItem key={stat.label} {...stat} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// CTA Section
+function CTASection() {
+  return (
+    <section className="py-16 md:py-24 bg-white px-6">
+      <div className="max-w-4xl mx-auto text-center">
+        <h2 className="text-[32px] font-semibold text-[#0a2540] mb-8">
+          Ready to get started?
+        </h2>
+        <a
+          href="#"
+          className="inline-flex items-center justify-center h-12 px-8 bg-[#d4a012] text-white font-medium rounded-lg hover:bg-[#c4920a] transition-colors"
+        >
+          Apply Now
+        </a>
+      </div>
+    </section>
+  );
+}
+
+// Main Page
+export default function Home() {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <main className="flex-1">
+        <HeroSection />
+        <ServicesSection />
+        <StatsSection />
+        <CTASection />
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      <Footer />
     </div>
   );
 }

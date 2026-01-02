@@ -5,19 +5,22 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Design System Colors */
+  --navy: #0a2540;
+  --navy-light: #1a3a5c;
+  --golden: #d4a012;
+  --golden-hover: #c4920a;
+  --gray-light: #f6f9fc;
+  --gray-text: #425466;
+  --gray-muted: #8898aa;
+  --border-color: #e6ebf1;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
 @layer utilities {
