@@ -1,2 +1,5 @@
 // Layout components
-// Export layout components as they are created
+export { Container } from "./Container";
+export { Header } from "./Header";
+export { Footer } from "./Footer";
+export { PageHeader } from "./PageHeader";
