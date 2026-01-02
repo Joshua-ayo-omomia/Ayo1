@@ -22,3 +22,7 @@ export {
   Mono,
   SectionLabel,
 } from './Typography';
+
+export { StepIndicator } from './StepIndicator';
+
+export { FileUpload } from './FileUpload';
