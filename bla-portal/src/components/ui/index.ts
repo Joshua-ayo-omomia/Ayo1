@@ -9,3 +9,16 @@ export type { CardProps } from './Card';
 
 export { Badge } from './Badge';
 export type { BadgeProps } from './Badge';
+
+export {
+  Hero,
+  Title,
+  Heading,
+  Subheading,
+  Body,
+  BodyLarge,
+  Caption,
+  Label,
+  Mono,
+  SectionLabel,
+} from './Typography';
