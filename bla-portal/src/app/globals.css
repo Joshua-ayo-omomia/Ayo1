@@ -8,11 +8,56 @@
   }
 
   body {
-    @apply bg-background text-text-secondary;
+    @apply bg-background text-text-secondary antialiased;
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply text-text font-semibold;
+  }
+
+  /* Focus rings for accessibility - WCAG AA compliant */
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent ring-offset-2;
+  }
+
+  /* Remove default focus for mouse users */
+  :focus:not(:focus-visible) {
+    @apply outline-none ring-0;
+  }
+
+  /* Ensure minimum touch target size */
+  button, a, input, select, textarea {
+    min-height: 44px;
+  }
+
+  /* Exception for inline links */
+  p a, span a, li a {
+    min-height: auto;
+  }
+}
+
+@layer components {
+  /* Card hover interaction */
+  .card-interactive {
+    @apply transition-all duration-200 ease-out;
+  }
+
+  .card-interactive:hover {
+    @apply border-text-muted shadow-md;
+  }
+
+  /* Link transitions */
+  .link {
+    @apply text-accent transition-colors duration-150;
+  }
+
+  .link:hover {
+    @apply text-accent/80;
+  }
+
+  /* Form focus - instant ring */
+  .form-input:focus {
+    @apply ring-2 ring-accent/20 border-accent;
   }
 }
 
@@ -20,4 +65,167 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  /* Page transition - fade in with upward movement */
+  .animate-fade-in-up {
+    animation: fadeInUp 0.3s ease-out forwards;
+  }
+
+  /* Slide in from right for toasts */
+  .animate-slide-in-right {
+    animation: slideInRight 0.3s ease-out forwards;
+  }
+
+  /* Subtle pulse for current step indicators */
+  .animate-pulse-subtle {
+    animation: pulseSutble 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Skeleton loading animation (optional shimmer) */
+  .animate-skeleton {
+    animation: skeleton 1.5s ease-in-out infinite;
+  }
+}
+
+/* Keyframe animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulseSutble {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes skeleton {
+  0% {
+    background-color: #f0f2f4;
+  }
+  50% {
+    background-color: #e4e7eb;
+  }
+  100% {
+    background-color: #f0f2f4;
+  }
+}
+
+/* Mobile responsive table to cards */
+@media (max-width: 768px) {
+  .table-responsive {
+    display: block;
+  }
+
+  .table-responsive thead {
+    display: none;
+  }
+
+  .table-responsive tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .table-responsive tr {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid #e6ebf1;
+  }
+
+  .table-responsive td {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border: none;
+  }
+
+  .table-responsive td::before {
+    content: attr(data-label);
+    font-weight: 500;
+    color: #0a2540;
+    margin-right: 1rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+  }
+
+  .print-break {
+    page-break-before: always;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --border: #000;
+    --text-muted: #444;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f6f9fc;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cfd7df;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8898aa;
+}
+
+/* Selection color */
+::selection {
+  background-color: #635bff20;
+  color: #0a2540;
 }
