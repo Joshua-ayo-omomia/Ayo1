@@ -1,0 +1,210 @@
+{
+  "name": "BLA Portal - Notification Orchestrator Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ai/notify",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook: Notify",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/notification_preferences?user_id=eq.{{ $json.body.userId }}&select=*",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "get-preferences",
+      "name": "Get User Notification Preferences",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [440, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "supabase-api",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/users?id=eq.{{ $json.body.userId }}&select=id,full_name,email,phone",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "get-user",
+      "name": "Get User Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [440, 480],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "supabase-api",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "id": "merge-data",
+      "name": "Merge User + Preferences",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [660, 380]
+    },
+    {
+      "parameters": {
+        "agent": "toolsAgent",
+        "promptType": "define",
+        "text": "=Send a notification to the user.\n\nNotification Type: {{ $json.body.type }}\nContext: {{ JSON.stringify($json.body.context) }}\n\nUser Details:\n- Name: {{ $json.user.full_name }}\n- Email: {{ $json.user.email }}\n- Phone: {{ $json.user.phone || 'not provided' }}\n\nNotification Preferences:\n- Email enabled: {{ $json.preferences.email_enabled || true }}\n- SMS enabled: {{ $json.preferences.sms_enabled || false }}\n- In-app enabled: {{ $json.preferences.in_app_enabled || true }}\n\nCompose an appropriate notification message and deliver it via the user's preferred channels. Always send in-app notifications. Only send email/SMS if enabled in preferences.",
+        "options": {
+          "systemMessage": "You are the notification orchestrator for the BLA Portal.\n\nNotification types and their urgency:\n- application_update: MEDIUM - Status change on application\n- document_request: HIGH - Documents needed from user\n- appointment_reminder: HIGH - Upcoming test/appointment\n- test_result: HIGH - Test scores available\n- license_expiry: MEDIUM - License approaching expiry\n- general: LOW - System announcements\n\nComposing messages:\n- Be professional and concise\n- Include actionable next steps\n- Reference specific IDs (application, appointment, etc.)\n- For HIGH urgency: use all enabled channels\n- For MEDIUM urgency: use in-app + email\n- For LOW urgency: in-app only\n\nUse the compose_message tool to generate the notification text, then use the appropriate delivery tools (send_in_app, send_email) to deliver.",
+          "maxIterations": 6
+        }
+      },
+      "id": "ai-agent",
+      "name": "AI Agent: Notification Orchestrator",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [880, 380]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "id": "openai-model",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [820, 580],
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-cred",
+          "name": "OpenAI API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "compose_message",
+        "description": "Compose a notification message. Input: JSON with notification_type, user_name, and context object. Returns title and message body.",
+        "jsCode": "const input = JSON.parse($input.item.json.input || '{}');\nconst { notification_type, user_name, context } = input;\n\nconst templates = {\n  application_update: {\n    title: `Application Status Update`,\n    message: `Hi ${user_name}, your ${context.application_type || 'license'} application (ID: ${context.application_id || 'N/A'}) has been updated to: ${context.new_status || 'updated'}. ${context.notes || 'Please check your portal for details.'}`\n  },\n  document_request: {\n    title: `Document Required`,\n    message: `Hi ${user_name}, we need additional documentation for your application (ID: ${context.application_id || 'N/A'}). Required: ${context.document_type || 'additional documents'}. Please upload via the portal.`\n  },\n  appointment_reminder: {\n    title: `Appointment Reminder`,\n    message: `Hi ${user_name}, you have an upcoming ${context.appointment_type || 'appointment'} scheduled for ${context.date || 'soon'} at ${context.location || 'the testing center'}. Please arrive 15 minutes early.`\n  },\n  test_result: {\n    title: `Test Results Available`,\n    message: `Hi ${user_name}, your ${context.test_type || 'test'} results are available. Score: ${context.score || 'N/A'}. Status: ${context.passed ? 'PASSED' : 'NOT PASSED'}. Check the portal for full details.`\n  },\n  license_expiry: {\n    title: `License Expiry Notice`,\n    message: `Hi ${user_name}, your driver's license will expire on ${context.expiry_date || 'soon'}. Please start the renewal process to avoid any interruption.`\n  },\n  general: {\n    title: context.title || `BLA Portal Update`,\n    message: `Hi ${user_name}, ${context.message || 'You have a new update on the BLA Portal. Please log in to check.'}`\n  }\n};\n\nconst template = templates[notification_type] || templates.general;\nreturn { title: template.title, message: template.message, type: notification_type };"
+      },
+      "id": "tool-compose",
+      "name": "Tool: Compose Message",
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1,
+      "position": [940, 580]
+    },
+    {
+      "parameters": {
+        "name": "send_in_app",
+        "description": "Send an in-app notification to the user. Input: JSON with user_id, title, message, and type.",
+        "jsCode": "const input = JSON.parse($input.item.json.input || '{}');\n// This would be an HTTP request to Supabase in production\n// Simulated here as a code tool for the workflow template\nreturn {\n  channel: 'in_app',\n  status: 'sent',\n  user_id: input.user_id,\n  title: input.title,\n  message: input.message,\n  type: input.type,\n  sent_at: new Date().toISOString()\n};"
+      },
+      "id": "tool-in-app",
+      "name": "Tool: Send In-App",
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1,
+      "position": [1060, 580]
+    },
+    {
+      "parameters": {
+        "name": "send_email",
+        "description": "Send an email notification to the user. Input: JSON with email, subject, and body.",
+        "jsCode": "const input = JSON.parse($input.item.json.input || '{}');\n// In production, replace with actual email sending logic\n// (SendGrid, SMTP, AWS SES, etc.)\nreturn {\n  channel: 'email',\n  status: 'queued',\n  to: input.email,\n  subject: input.subject,\n  body_preview: input.body?.substring(0, 100) + '...',\n  sent_at: new Date().toISOString()\n};"
+      },
+      "id": "tool-email",
+      "name": "Tool: Send Email",
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1,
+      "position": [1180, 580]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, notifications_sent: $json.output }) }}"
+      },
+      "id": "respond-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1100, 380]
+    }
+  ],
+  "connections": {
+    "Webhook: Notify": {
+      "main": [
+        [
+          { "node": "Get User Notification Preferences", "type": "main", "index": 0 },
+          { "node": "Get User Details", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Get User Notification Preferences": {
+      "main": [
+        [{ "node": "Merge User + Preferences", "type": "main", "index": 0 }]
+      ]
+    },
+    "Get User Details": {
+      "main": [
+        [{ "node": "Merge User + Preferences", "type": "main", "index": 1 }]
+      ]
+    },
+    "Merge User + Preferences": {
+      "main": [
+        [{ "node": "AI Agent: Notification Orchestrator", "type": "main", "index": 0 }]
+      ]
+    },
+    "AI Agent: Notification Orchestrator": {
+      "main": [
+        [{ "node": "Respond to Webhook", "type": "main", "index": 0 }]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [{ "node": "AI Agent: Notification Orchestrator", "type": "ai_languageModel", "index": 0 }]
+      ]
+    },
+    "Tool: Compose Message": {
+      "ai_tool": [
+        [{ "node": "AI Agent: Notification Orchestrator", "type": "ai_tool", "index": 0 }]
+      ]
+    },
+    "Tool: Send In-App": {
+      "ai_tool": [
+        [{ "node": "AI Agent: Notification Orchestrator", "type": "ai_tool", "index": 1 }]
+      ]
+    },
+    "Tool: Send Email": {
+      "ai_tool": [
+        [{ "node": "AI Agent: Notification Orchestrator", "type": "ai_tool", "index": 2 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    { "name": "AI Agent" },
+    { "name": "BLA Portal" },
+    { "name": "Notifications" }
+  ]
+}

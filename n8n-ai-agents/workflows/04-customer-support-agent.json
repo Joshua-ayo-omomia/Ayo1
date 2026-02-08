@@ -1,0 +1,193 @@
+{
+  "name": "BLA Portal - Customer Support Chatbot Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ai/chat",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook: Chat",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "agent": "toolsAgent",
+        "promptType": "define",
+        "text": "={{ $json.body.message }}",
+        "options": {
+          "systemMessage": "You are the BLA Portal Customer Support Assistant. You help users with their driver license applications, document submissions, test scheduling, and general inquiries.\n\nCurrent user context:\n- User ID: {{ $json.body.userId }}\n- Session: {{ $json.body.sessionId }}\n\nCapabilities:\n1. Check application status - use the get_applications tool\n2. Check document status - use the get_documents tool  \n3. Check test results - use the get_test_results tool\n4. Check appointments - use the get_appointments tool\n5. Answer policy questions - use your training knowledge\n6. Escalate to human admin - use the escalate_to_admin tool\n\nRules:\n- Only access data belonging to the current user (User ID above)\n- Never reveal internal system details or other users' data\n- Be professional, helpful, and concise\n- If you cannot help, offer to escalate to a human agent\n- Do not make promises about processing times\n- For document issues, explain what's needed specifically\n\nCommon questions:\n- 'What's my application status?' → Use get_applications tool\n- 'Why was my document rejected?' → Use get_documents tool, explain the rejection reason\n- 'When is my test?' → Use get_appointments tool\n- 'Did I pass my test?' → Use get_test_results tool\n- 'What documents do I need?' → Explain based on application type\n- 'How do I renew my license?' → Explain renewal process",
+          "maxIterations": 10
+        }
+      },
+      "id": "ai-agent",
+      "name": "AI Agent: Customer Support",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-20250514",
+        "options": {
+          "temperature": 0.3,
+          "maxTokensToSample": 1024
+        }
+      },
+      "id": "anthropic-model",
+      "name": "Anthropic Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1,
+      "position": [380, 520],
+      "credentials": {
+        "anthropicApi": {
+          "id": "anthropic-cred",
+          "name": "Anthropic API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.body.userId }}_{{ $json.body.sessionId }}",
+        "contextWindowLength": 15
+      },
+      "id": "memory",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.2,
+      "position": [500, 520]
+    },
+    {
+      "parameters": {
+        "name": "get_applications",
+        "description": "Get the current user's license applications. No input required. Returns a list of applications with status, type, and dates.",
+        "jsCode": "// In production, this makes an HTTP request to Supabase\n// Template shows the structure\nconst userId = $input.item.json.body?.userId;\nreturn {\n  note: 'Replace this with an HTTP Request to Supabase',\n  endpoint: `${process.env.SUPABASE_URL}/rest/v1/applications?user_id=eq.${userId}&select=id,type,status,created_at,updated_at&order=created_at.desc`,\n  mock_data: [\n    { id: 'app-001', type: 'learners_permit', status: 'submitted', created_at: '2025-01-15' },\n    { id: 'app-002', type: 'drivers_license', status: 'documents_verified', created_at: '2025-02-01' }\n  ]\n};"
+      },
+      "id": "tool-applications",
+      "name": "Tool: Get Applications",
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1,
+      "position": [620, 520]
+    },
+    {
+      "parameters": {
+        "name": "get_documents",
+        "description": "Get the current user's submitted documents with verification status. No input required. Returns documents with type, status, and any rejection reasons.",
+        "jsCode": "const userId = $input.item.json.body?.userId;\nreturn {\n  note: 'Replace this with an HTTP Request to Supabase',\n  endpoint: `${process.env.SUPABASE_URL}/rest/v1/documents?user_id=eq.${userId}&select=id,type,verification_status,verification_notes,uploaded_at`,\n  mock_data: [\n    { id: 'doc-001', type: 'photo', verification_status: 'verified', uploaded_at: '2025-01-15' },\n    { id: 'doc-002', type: 'medical_certificate', verification_status: 'rejected', verification_notes: 'Document expired', uploaded_at: '2025-01-16' }\n  ]\n};"
+      },
+      "id": "tool-documents",
+      "name": "Tool: Get Documents",
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1,
+      "position": [740, 520]
+    },
+    {
+      "parameters": {
+        "name": "get_test_results",
+        "description": "Get the current user's test results. No input required. Returns test scores and pass/fail status.",
+        "jsCode": "const userId = $input.item.json.body?.userId;\nreturn {\n  note: 'Replace this with an HTTP Request to Supabase',\n  endpoint: `${process.env.SUPABASE_URL}/rest/v1/test_results?user_id=eq.${userId}&select=id,test_type,score,passed,taken_at`,\n  mock_data: [\n    { id: 'test-001', test_type: 'regulations', score: 85, passed: true, taken_at: '2025-02-01' }\n  ]\n};"
+      },
+      "id": "tool-tests",
+      "name": "Tool: Get Test Results",
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1,
+      "position": [860, 520]
+    },
+    {
+      "parameters": {
+        "name": "get_appointments",
+        "description": "Get the current user's scheduled appointments. No input required. Returns upcoming appointments with type, date, and location.",
+        "jsCode": "const userId = $input.item.json.body?.userId;\nreturn {\n  note: 'Replace this with an HTTP Request to Supabase',\n  endpoint: `${process.env.SUPABASE_URL}/rest/v1/appointments?user_id=eq.${userId}&select=id,type,scheduled_date,location,status&order=scheduled_date.asc`,\n  mock_data: [\n    { id: 'apt-001', type: 'driving_test', scheduled_date: '2025-03-15T10:00:00Z', location: 'Main Testing Center', status: 'confirmed' }\n  ]\n};"
+      },
+      "id": "tool-appointments",
+      "name": "Tool: Get Appointments",
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1,
+      "position": [980, 520]
+    },
+    {
+      "parameters": {
+        "name": "escalate_to_admin",
+        "description": "Escalate a complex issue to a human administrator. Input: JSON with reason (string) describing why escalation is needed.",
+        "jsCode": "const input = JSON.parse($input.item.json.input || '{}');\nconst userId = $input.item.json.body?.userId;\nreturn {\n  escalated: true,\n  user_id: userId,\n  reason: input.reason,\n  timestamp: new Date().toISOString(),\n  note: 'In production, this creates an admin notification and/or Slack message'\n};"
+      },
+      "id": "tool-escalate",
+      "name": "Tool: Escalate to Admin",
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1,
+      "position": [1100, 520]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ reply: $json.output, sessionId: $json.body.sessionId }) }}"
+      },
+      "id": "respond-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [660, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: Chat": {
+      "main": [
+        [{ "node": "AI Agent: Customer Support", "type": "main", "index": 0 }]
+      ]
+    },
+    "AI Agent: Customer Support": {
+      "main": [
+        [{ "node": "Respond to Webhook", "type": "main", "index": 0 }]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [{ "node": "AI Agent: Customer Support", "type": "ai_languageModel", "index": 0 }]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [{ "node": "AI Agent: Customer Support", "type": "ai_memory", "index": 0 }]
+      ]
+    },
+    "Tool: Get Applications": {
+      "ai_tool": [
+        [{ "node": "AI Agent: Customer Support", "type": "ai_tool", "index": 0 }]
+      ]
+    },
+    "Tool: Get Documents": {
+      "ai_tool": [
+        [{ "node": "AI Agent: Customer Support", "type": "ai_tool", "index": 1 }]
+      ]
+    },
+    "Tool: Get Test Results": {
+      "ai_tool": [
+        [{ "node": "AI Agent: Customer Support", "type": "ai_tool", "index": 2 }]
+      ]
+    },
+    "Tool: Get Appointments": {
+      "ai_tool": [
+        [{ "node": "AI Agent: Customer Support", "type": "ai_tool", "index": 3 }]
+      ]
+    },
+    "Tool: Escalate to Admin": {
+      "ai_tool": [
+        [{ "node": "AI Agent: Customer Support", "type": "ai_tool", "index": 4 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    { "name": "AI Agent" },
+    { "name": "BLA Portal" },
+    { "name": "Customer Support" },
+    { "name": "Chatbot" }
+  ]
+}

@@ -1,0 +1,295 @@
+{
+  "name": "BLA Portal - Application Review Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ai/review-application",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook: Review Application",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/applications?id=eq.{{ $json.body.applicationId }}&select=*,users(id,full_name,email,date_of_birth,national_id),documents(*)",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "get-application",
+      "name": "Get Application + User + Documents",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [440, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "supabase-api",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "agent": "toolsAgent",
+        "promptType": "define",
+        "text": "=Review this driver license application:\n\nApplication ID: {{ $json[0].id }}\nApplication Type: {{ $json[0].type }}\nStatus: {{ $json[0].status }}\nSubmitted At: {{ $json[0].created_at }}\n\nApplicant:\n- Name: {{ $json[0].users.full_name }}\n- Email: {{ $json[0].users.email }}\n- Date of Birth: {{ $json[0].users.date_of_birth }}\n- National ID: {{ $json[0].users.national_id }}\n\nDocuments Submitted: {{ $json[0].documents.length }}\n{{ $json[0].documents.map(d => `- ${d.type}: ${d.verification_status || 'pending'}`).join('\\n') }}\n\nPlease review this application for completeness and eligibility. Use the eligibility checker tool to validate requirements, then provide your decision.",
+        "options": {
+          "systemMessage": "You are an application review agent for the BLA Portal. You review driver license applications for completeness and eligibility.\n\nApplication types and requirements:\n\n1. LEARNER'S PERMIT:\n   - Applicant must be 16 years or older\n   - Valid photo ID required\n   - Proof of age required\n   - Medical certificate required\n\n2. DRIVER'S LICENSE:\n   - Applicant must be 18 years or older\n   - Must have existing learner's permit\n   - Must have passed regulations test\n   - Must have passed driving test\n   - All documents verified\n   - Photo ID, proof of residence, medical certificate required\n\n3. LICENSE RENEWAL:\n   - Existing license within renewal window (90 days before expiry)\n   - Updated medical certificate required\n   - Photo ID required\n\nDecision criteria:\n- APPROVE: All requirements met, all documents verified, high confidence (>0.85)\n- ESCALATE: Most requirements met but ambiguity exists, moderate confidence (0.5-0.85)\n- REJECT: Clear disqualification (underage, missing critical documents, failed tests)\n\nAlways use the eligibility_check tool to validate age and document requirements before making your decision.",
+          "maxIterations": 8
+        }
+      },
+      "id": "ai-agent",
+      "name": "AI Agent: Review Application",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [660, 300]
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-20250514",
+        "options": {
+          "temperature": 0.1,
+          "maxTokensToSample": 2048
+        }
+      },
+      "id": "anthropic-model",
+      "name": "Anthropic Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1,
+      "position": [620, 520],
+      "credentials": {
+        "anthropicApi": {
+          "id": "anthropic-cred",
+          "name": "Anthropic API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "eligibility_check",
+        "description": "Check if an applicant meets eligibility requirements. Input: JSON with fields: application_type (string), date_of_birth (ISO date string), documents (array of {type, verification_status})",
+        "jsCode": "const input = JSON.parse($input.item.json.input || '{}');\nconst { application_type, date_of_birth, documents = [] } = input;\n\nconst issues = [];\nconst now = new Date();\nconst dob = new Date(date_of_birth);\nconst age = Math.floor((now - dob) / (1000 * 60 * 60 * 24 * 365.25));\n\n// Age requirements\nconst ageRequirements = {\n  'learners_permit': 16,\n  'drivers_license': 18,\n  'license_renewal': 18\n};\n\nconst requiredAge = ageRequirements[application_type] || 18;\nif (age < requiredAge) {\n  issues.push(`Applicant is ${age} years old, minimum age is ${requiredAge}`);\n}\n\n// Document requirements by type\nconst docRequirements = {\n  'learners_permit': ['photo', 'proof_of_age', 'medical_certificate'],\n  'drivers_license': ['photo', 'proof_of_residence', 'medical_certificate'],\n  'license_renewal': ['photo', 'medical_certificate']\n};\n\nconst required = docRequirements[application_type] || [];\nconst submittedTypes = documents.map(d => d.type);\nconst verifiedTypes = documents.filter(d => d.verification_status === 'verified').map(d => d.type);\n\nfor (const req of required) {\n  if (!submittedTypes.includes(req)) {\n    issues.push(`Missing required document: ${req}`);\n  } else if (!verifiedTypes.includes(req)) {\n    issues.push(`Document not yet verified: ${req}`);\n  }\n}\n\nconst eligible = issues.length === 0;\n\nreturn {\n  eligible,\n  age,\n  required_age: requiredAge,\n  documents_required: required,\n  documents_submitted: submittedTypes,\n  documents_verified: verifiedTypes,\n  issues,\n  recommendation: eligible ? 'approve' : (issues.some(i => i.includes('years old')) ? 'reject' : 'escalate')\n};"
+      },
+      "id": "code-tool-eligibility",
+      "name": "Tool: Eligibility Check",
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1,
+      "position": [740, 520]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/test_results?user_id=eq.{{ $input.item.json.userId }}&select=*",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "http-tool-tests",
+      "name": "Tool: Get Test Results",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1,
+      "position": [860, 520],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "supabase-api",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchema": {
+          "type": "object",
+          "properties": {
+            "decision": {
+              "type": "string",
+              "enum": ["approve", "reject", "escalate"],
+              "description": "The review decision"
+            },
+            "reason": {
+              "type": "string",
+              "description": "Detailed explanation for the decision"
+            },
+            "missing_requirements": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "List of unmet requirements"
+            },
+            "confidence": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Confidence in the decision"
+            },
+            "next_steps": {
+              "type": "string",
+              "description": "Recommended next steps for the applicant or admin"
+            }
+          },
+          "required": ["decision", "reason", "confidence", "next_steps"]
+        }
+      },
+      "id": "output-parser",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [980, 520]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.output.decision }}",
+              "operation": "equals",
+              "value2": "approve"
+            }
+          ]
+        },
+        "fallbackOutput": "extra"
+      },
+      "id": "switch-decision",
+      "name": "Switch: Decision",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [880, 300]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/applications?id=eq.{{ $json.applicationId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "status", "value": "approved" },
+            { "name": "reviewer_notes", "value": "={{ $json.output.reason }}" },
+            { "name": "reviewed_at", "value": "={{ $now.toISO() }}" }
+          ]
+        }
+      },
+      "id": "approve-application",
+      "name": "Approve Application",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1100, 180],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "supabase-api",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/applications?id=eq.{{ $json.applicationId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "status", "value": "under_review" },
+            { "name": "reviewer_notes", "value": "=AI Review (escalated): {{ $json.output.reason }}" }
+          ]
+        }
+      },
+      "id": "escalate-application",
+      "name": "Escalate to Admin",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1100, 420],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "supabase-api",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, decision: $json.output.decision, confidence: $json.output.confidence, next_steps: $json.output.next_steps }) }}"
+      },
+      "id": "respond-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1320, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: Review Application": {
+      "main": [
+        [{ "node": "Get Application + User + Documents", "type": "main", "index": 0 }]
+      ]
+    },
+    "Get Application + User + Documents": {
+      "main": [
+        [{ "node": "AI Agent: Review Application", "type": "main", "index": 0 }]
+      ]
+    },
+    "AI Agent: Review Application": {
+      "main": [
+        [{ "node": "Switch: Decision", "type": "main", "index": 0 }]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [{ "node": "AI Agent: Review Application", "type": "ai_languageModel", "index": 0 }]
+      ]
+    },
+    "Tool: Eligibility Check": {
+      "ai_tool": [
+        [{ "node": "AI Agent: Review Application", "type": "ai_tool", "index": 0 }]
+      ]
+    },
+    "Tool: Get Test Results": {
+      "ai_tool": [
+        [{ "node": "AI Agent: Review Application", "type": "ai_tool", "index": 1 }]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [{ "node": "AI Agent: Review Application", "type": "ai_outputParser", "index": 0 }]
+      ]
+    },
+    "Switch: Decision": {
+      "main": [
+        [{ "node": "Approve Application", "type": "main", "index": 0 }],
+        [{ "node": "Escalate to Admin", "type": "main", "index": 0 }]
+      ]
+    },
+    "Approve Application": {
+      "main": [
+        [{ "node": "Respond to Webhook", "type": "main", "index": 0 }]
+      ]
+    },
+    "Escalate to Admin": {
+      "main": [
+        [{ "node": "Respond to Webhook", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    { "name": "AI Agent" },
+    { "name": "BLA Portal" },
+    { "name": "Application Review" }
+  ]
+}

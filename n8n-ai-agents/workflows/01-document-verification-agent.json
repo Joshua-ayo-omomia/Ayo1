@@ -1,0 +1,298 @@
+{
+  "name": "BLA Portal - Document Verification Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ai/review-document",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook: Document Review",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/documents?id=eq.{{ $json.body.documentId }}&select=*,applications(id,type,status,user_id)",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "get-document",
+      "name": "Get Document Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [440, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "supabase-api",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "agent": "toolsAgent",
+        "promptType": "define",
+        "text": "=Verify the following document:\n\nDocument ID: {{ $json[0].id }}\nDocument Type: {{ $json[0].type }}\nFile Name: {{ $json[0].file_name }}\nUploaded At: {{ $json[0].uploaded_at }}\nApplication ID: {{ $json[0].application_id }}\nApplication Type: {{ $json[0].applications.type }}\n\nAnalyze this document and provide a verification assessment.",
+        "options": {
+          "systemMessage": "You are a document verification agent for the BLA (Business Licensing Authority) Portal.\n\nYour role is to verify submitted documents for driver license applications.\n\nDocument types you verify:\n1. photo - Photo ID (passport, national ID): Must be clear, recent, identifiable\n2. proof_of_age - Proof of age document: Must show date of birth clearly\n3. proof_of_residence - Proof of address: Must be less than 3 months old, show full address\n4. medical_certificate - Medical fitness certificate: Must be from authorized provider, not expired\n\nVerification checklist for each document:\n- Document type matches what was expected\n- Document appears complete (not truncated or partially uploaded)\n- File format is acceptable (PDF, JPG, PNG)\n- Document metadata is consistent\n\nProvide your assessment as a structured JSON output with:\n- status: 'verified', 'rejected', or 'needs_review'\n- issues: array of any problems found\n- confidence: 0.0 to 1.0\n- notes: additional context for human reviewers\n\nBe conservative - if in doubt, set status to 'needs_review' rather than 'verified'.",
+          "maxIterations": 5
+        }
+      },
+      "id": "ai-agent",
+      "name": "AI Agent: Verify Document",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [660, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "id": "openai-model",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [660, 500],
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-cred",
+          "name": "OpenAI API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validate document metadata\nconst doc = $input.item.json;\n\nconst validTypes = ['photo', 'proof_of_age', 'proof_of_residence', 'medical_certificate'];\nconst validExtensions = ['.pdf', '.jpg', '.jpeg', '.png'];\n\nconst issues = [];\n\n// Check document type\nif (!validTypes.includes(doc.type)) {\n  issues.push(`Unknown document type: ${doc.type}`);\n}\n\n// Check file extension\nconst fileName = doc.file_name || '';\nconst ext = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();\nif (!validExtensions.includes(ext)) {\n  issues.push(`Invalid file format: ${ext}. Accepted: ${validExtensions.join(', ')}`);\n}\n\n// Check upload date\nconst uploadDate = new Date(doc.uploaded_at);\nconst now = new Date();\nconst daysSinceUpload = Math.floor((now - uploadDate) / (1000 * 60 * 60 * 24));\n\nreturn {\n  type_valid: validTypes.includes(doc.type),\n  format_valid: validExtensions.includes(ext),\n  days_since_upload: daysSinceUpload,\n  issues: issues,\n  metadata_check_passed: issues.length === 0\n};"
+      },
+      "id": "code-tool-validate",
+      "name": "Code Tool: Validate Metadata",
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1,
+      "position": [780, 500]
+    },
+    {
+      "parameters": {
+        "jsonSchema": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["verified", "rejected", "needs_review"],
+              "description": "Verification decision"
+            },
+            "issues": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "List of issues found"
+            },
+            "confidence": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Confidence score"
+            },
+            "notes": {
+              "type": "string",
+              "description": "Additional notes for human reviewer"
+            }
+          },
+          "required": ["status", "issues", "confidence", "notes"]
+        }
+      },
+      "id": "output-parser",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [900, 500]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/documents?id=eq.{{ $json.body.documentId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "verification_status",
+              "value": "={{ $json.output.status }}"
+            },
+            {
+              "name": "verification_notes",
+              "value": "={{ $json.output.notes }}"
+            },
+            {
+              "name": "verified_at",
+              "value": "={{ $now.toISO() }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "update-document",
+      "name": "Update Document Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [880, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "supabase-api",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-rejected",
+              "leftValue": "={{ $json.output.status }}",
+              "rightValue": "rejected",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "if-issues",
+      "name": "IF: Document Rejected?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1100, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/notifications",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "user_id",
+              "value": "={{ $json.userId }}"
+            },
+            {
+              "name": "type",
+              "value": "document_request"
+            },
+            {
+              "name": "title",
+              "value": "Document Verification Issue"
+            },
+            {
+              "name": "message",
+              "value": "=Your {{ $json.output.document_type }} document requires attention: {{ $json.output.notes }}. Please upload a new document."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "notify-user",
+      "name": "Notify User: Resubmit Document",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1320, 200],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "supabase-api",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, status: $json.output.status, confidence: $json.output.confidence }) }}"
+      },
+      "id": "respond-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1320, 400]
+    }
+  ],
+  "connections": {
+    "Webhook: Document Review": {
+      "main": [
+        [{ "node": "Get Document Details", "type": "main", "index": 0 }]
+      ]
+    },
+    "Get Document Details": {
+      "main": [
+        [{ "node": "AI Agent: Verify Document", "type": "main", "index": 0 }]
+      ]
+    },
+    "AI Agent: Verify Document": {
+      "main": [
+        [{ "node": "Update Document Status", "type": "main", "index": 0 }]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [{ "node": "AI Agent: Verify Document", "type": "ai_languageModel", "index": 0 }]
+      ]
+    },
+    "Code Tool: Validate Metadata": {
+      "ai_tool": [
+        [{ "node": "AI Agent: Verify Document", "type": "ai_tool", "index": 0 }]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [{ "node": "AI Agent: Verify Document", "type": "ai_outputParser", "index": 0 }]
+      ]
+    },
+    "Update Document Status": {
+      "main": [
+        [{ "node": "IF: Document Rejected?", "type": "main", "index": 0 }]
+      ]
+    },
+    "IF: Document Rejected?": {
+      "main": [
+        [{ "node": "Notify User: Resubmit Document", "type": "main", "index": 0 }],
+        [{ "node": "Respond to Webhook", "type": "main", "index": 0 }]
+      ]
+    },
+    "Notify User: Resubmit Document": {
+      "main": [
+        [{ "node": "Respond to Webhook", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    { "name": "AI Agent" },
+    { "name": "BLA Portal" },
+    { "name": "Document Verification" }
+  ]
+}
