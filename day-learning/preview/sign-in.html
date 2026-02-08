@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In | Day Learning</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwindcss.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { 50:'#E8EBF0',100:'#C5CBD6',200:'#8E9BB0',300:'#5C6E8A',400:'#2D4263',500:'#0F2440',600:'#0D1F37',700:'#0A1628',800:'#07101D',900:'#040A13',950:'#020509' },
+            teal: { 50:'#EDFCFA',100:'#D4F7F3',200:'#A8EFE7',300:'#6DE4D6',400:'#2DD4BF',500:'#14B8A6',600:'#0D9488',700:'#0A766C',800:'#085C54',900:'#064E47' },
+            amber: { 50:'#FFFBEB',100:'#FEF3C7',200:'#FDE68A',300:'#FCD34D',400:'#FBBF24',500:'#F59E0B',600:'#D97706',700:'#B45309',800:'#92400E',900:'#78350F' },
+            warm: { 50:'#FAFAF9',100:'#F5F5F4',200:'#E7E5E4',300:'#D6D3D1',400:'#A8A29E' },
+          },
+          fontFamily: {
+            display: ['system-ui','-apple-system','BlinkMacSystemFont','Segoe UI','sans-serif'],
+            body: ['system-ui','-apple-system','BlinkMacSystemFont','Segoe UI','sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="font-body text-navy-700 bg-warm-50 min-h-screen flex flex-col">
+
+  <!-- Navigation -->
+  <nav class="sticky top-0 z-50 bg-white border-b border-warm-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo -->
+        <a href="index.html" class="flex items-center space-x-2">
+          <div class="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center">
+            <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+          </div>
+          <span class="text-xl font-bold font-display text-navy-700">Day Learning</span>
+        </a>
+
+        <!-- Nav Links -->
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="tracks.html" class="text-sm font-medium text-navy-400 hover:text-navy-700 transition-colors">Tracks</a>
+          <a href="apply.html" class="text-sm font-medium text-navy-400 hover:text-navy-700 transition-colors">Apply</a>
+        </div>
+
+        <!-- Nav Buttons -->
+        <div class="flex items-center space-x-3">
+          <a href="sign-in.html" class="hidden sm:inline-flex items-center px-4 py-2 text-sm font-medium text-teal-600 border border-teal-500 rounded-lg hover:bg-teal-50 transition-colors">
+            Sign In
+          </a>
+          <a href="apply.html" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-teal-500 rounded-lg hover:bg-teal-600 transition-colors shadow-sm">
+            Apply Now
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Sign In Card -->
+  <main class="flex-1 flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8">
+    <div class="w-full max-w-md">
+      <div class="bg-white rounded-2xl shadow-lg border border-warm-200 p-8">
+        <!-- Title -->
+        <div class="text-center mb-8">
+          <h1 class="text-2xl font-bold font-display text-navy-700 mb-2">Welcome back</h1>
+          <p class="text-sm text-navy-400">Sign in to continue your learning journey</p>
+        </div>
+
+        <!-- Google Button -->
+        <button type="button" class="w-full flex items-center justify-center gap-3 px-4 py-3 text-sm font-medium text-navy-700 bg-white border border-warm-300 rounded-lg hover:bg-warm-50 hover:border-navy-200 transition-colors">
+          <svg width="20" height="20" viewBox="0 0 48 48">
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+            <path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.0 24.0 0 0 0 0 21.56l7.98-6.19z"/>
+            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+          </svg>
+          Continue with Google
+        </button>
+
+        <!-- Divider -->
+        <div class="relative my-8">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-warm-200"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="px-4 bg-white text-navy-300">or continue with email</span>
+          </div>
+        </div>
+
+        <!-- Email Form -->
+        <form onsubmit="event.preventDefault();">
+          <div class="mb-6">
+            <label for="email" class="block text-sm font-medium text-navy-600 mb-2">Email address</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="you@example.com"
+              class="w-full px-4 py-3 text-sm text-navy-700 bg-warm-50 border border-warm-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 placeholder-navy-300 transition-colors"
+            />
+          </div>
+
+          <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-teal-500 rounded-lg hover:bg-teal-600 transition-colors shadow-sm">
+            <i data-lucide="mail" class="w-4 h-4"></i>
+            Send Magic Link
+          </button>
+        </form>
+
+        <!-- Footer Text -->
+        <p class="mt-8 text-center text-sm text-navy-400">
+          Don't have an account?
+          <a href="apply.html" class="font-semibold text-teal-600 hover:text-teal-700 transition-colors">Apply to join</a>
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-navy-700 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+        <!-- Brand Column -->
+        <div class="md:col-span-1">
+          <a href="index.html" class="flex items-center space-x-2 mb-4">
+            <div class="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center">
+              <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+            </div>
+            <span class="text-xl font-bold font-display text-white">Day Learning</span>
+          </a>
+          <p class="text-sm text-navy-200">Become AI-native. Learn to build, ship, and scale with AI.</p>
+        </div>
+
+        <!-- Program Column -->
+        <div>
+          <h4 class="text-sm font-semibold text-white uppercase tracking-wider mb-4">Program</h4>
+          <ul class="space-y-3">
+            <li><a href="tracks.html" class="text-sm text-navy-200 hover:text-white transition-colors">Learning Tracks</a></li>
+            <li><a href="ai-engineer.html" class="text-sm text-navy-200 hover:text-white transition-colors">AI Engineer Track</a></li>
+            <li><a href="apply.html" class="text-sm text-navy-200 hover:text-white transition-colors">Apply Now</a></li>
+          </ul>
+        </div>
+
+        <!-- Company Column -->
+        <div>
+          <h4 class="text-sm font-semibold text-white uppercase tracking-wider mb-4">Company</h4>
+          <ul class="space-y-3">
+            <li><a href="#about" class="text-sm text-navy-200 hover:text-white transition-colors">About</a></li>
+            <li><a href="#blog" class="text-sm text-navy-200 hover:text-white transition-colors">Blog</a></li>
+            <li><a href="#careers" class="text-sm text-navy-200 hover:text-white transition-colors">Careers</a></li>
+          </ul>
+        </div>
+
+        <!-- Legal Column -->
+        <div>
+          <h4 class="text-sm font-semibold text-white uppercase tracking-wider mb-4">Legal</h4>
+          <ul class="space-y-3">
+            <li><a href="#privacy" class="text-sm text-navy-200 hover:text-white transition-colors">Privacy Policy</a></li>
+            <li><a href="#terms" class="text-sm text-navy-200 hover:text-white transition-colors">Terms of Service</a></li>
+            <li><a href="#contact" class="text-sm text-navy-200 hover:text-white transition-colors">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Footer Bottom -->
+      <div class="border-t border-navy-600 pt-8 flex flex-col sm:flex-row items-center justify-between">
+        <p class="text-sm text-navy-300">&copy; 2025 Day Learning. All rights reserved.</p>
+        <div class="flex items-center space-x-4 mt-4 sm:mt-0">
+          <a href="#twitter" class="text-navy-300 hover:text-white transition-colors">
+            <i data-lucide="twitter" class="w-5 h-5"></i>
+          </a>
+          <a href="#linkedin" class="text-navy-300 hover:text-white transition-colors">
+            <i data-lucide="linkedin" class="w-5 h-5"></i>
+          </a>
+          <a href="#github" class="text-navy-300 hover:text-white transition-colors">
+            <i data-lucide="github" class="w-5 h-5"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>

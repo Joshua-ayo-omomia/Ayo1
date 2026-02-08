@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apply - Day Learning</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwindcss.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { 50:'#E8EBF0',100:'#C5CBD6',200:'#8E9BB0',300:'#5C6E8A',400:'#2D4263',500:'#0F2440',600:'#0D1F37',700:'#0A1628',800:'#07101D',900:'#040A13',950:'#020509' },
+            teal: { 50:'#EDFCFA',100:'#D4F7F3',200:'#A8EFE7',300:'#6DE4D6',400:'#2DD4BF',500:'#14B8A6',600:'#0D9488',700:'#0A766C',800:'#085C54',900:'#064E47' },
+            amber: { 50:'#FFFBEB',100:'#FEF3C7',200:'#FDE68A',300:'#FCD34D',400:'#FBBF24',500:'#F59E0B',600:'#D97706',700:'#B45309',800:'#92400E',900:'#78350F' },
+            warm: { 50:'#FAFAF9',100:'#F5F5F4',200:'#E7E5E4',300:'#D6D3D1',400:'#A8A29E' },
+          },
+          fontFamily: {
+            display: ['system-ui','-apple-system','BlinkMacSystemFont','Segoe UI','sans-serif'],
+            body: ['system-ui','-apple-system','BlinkMacSystemFont','Segoe UI','sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="flex min-h-screen flex-col bg-warm-50 font-body">
+
+  <!-- ===== NAVIGATION BAR ===== -->
+  <header class="sticky top-0 z-50 w-full border-b border-warm-200 bg-white">
+    <nav class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <a href="/" class="font-display text-xl font-bold text-navy-700">Day Learning</a>
+
+      <!-- Desktop nav -->
+      <div class="hidden items-center gap-8 md:flex">
+        <a href="/tracks" class="font-body text-sm font-medium text-navy-500 transition-colors hover:text-navy-700">Tracks</a>
+        <a href="/apply" class="font-body text-sm font-medium text-navy-500 transition-colors hover:text-navy-700">Apply</a>
+        <a href="/apply" class="rounded-lg bg-teal-500 px-5 py-2 font-body text-sm font-semibold text-white transition-colors hover:bg-teal-600">Apply Now</a>
+        <a href="/sign-in" class="rounded-lg border border-navy-200 px-5 py-2 font-body text-sm font-semibold text-navy-700 transition-colors hover:bg-navy-50">Sign In</a>
+      </div>
+
+      <!-- Mobile toggle -->
+      <button
+        id="mobile-toggle"
+        class="inline-flex items-center justify-center rounded-md p-2 text-navy-500 hover:bg-warm-100 md:hidden"
+        aria-label="Toggle menu"
+      >
+        <i data-lucide="menu" class="h-6 w-6" id="menu-icon"></i>
+        <i data-lucide="x" class="hidden h-6 w-6" id="close-icon"></i>
+      </button>
+    </nav>
+
+    <!-- Mobile slide-in menu -->
+    <div id="mobile-menu" class="fixed inset-0 top-16 z-40 translate-x-full transform bg-white transition-transform duration-300 ease-in-out md:hidden">
+      <div class="flex flex-col gap-2 border-t border-warm-200 px-4 py-6">
+        <a href="/tracks" class="rounded-lg px-4 py-3 font-body text-base font-medium text-navy-500 transition-colors hover:bg-warm-50">Tracks</a>
+        <a href="/apply" class="rounded-lg px-4 py-3 font-body text-base font-medium text-navy-500 transition-colors hover:bg-warm-50">Apply</a>
+        <div class="mt-4 flex flex-col gap-3 border-t border-warm-200 pt-4">
+          <a href="/apply" class="rounded-lg bg-teal-500 px-5 py-3 text-center font-body text-sm font-semibold text-white transition-colors hover:bg-teal-600">Apply Now</a>
+          <a href="/sign-in" class="rounded-lg border border-navy-200 px-5 py-3 text-center font-body text-sm font-semibold text-navy-700 transition-colors hover:bg-navy-50">Sign In</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Backdrop -->
+    <div id="mobile-backdrop" class="fixed inset-0 top-16 z-30 hidden bg-black/20 md:hidden"></div>
+  </header>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="flex-1">
+    <div class="mx-auto max-w-2xl px-4 py-12 sm:px-6 lg:px-8">
+
+      <!-- Page title -->
+      <div class="mb-8 text-center">
+        <h1 class="font-display text-3xl font-bold text-navy-700 sm:text-4xl">Apply to Day Learning</h1>
+        <p class="mt-2 font-body text-navy-400">Join the AI Engineer track and level up your career.</p>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="mb-8 space-y-4">
+        <!-- Bar track -->
+        <div class="h-2 w-full overflow-hidden rounded-full bg-warm-200">
+          <div class="h-full rounded-full bg-teal-500 transition-all duration-500" style="width: 25%;"></div>
+        </div>
+
+        <!-- Step indicators -->
+        <div class="flex justify-between">
+          <!-- Step 1 - Active -->
+          <div class="flex flex-col items-center gap-1">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-teal-500 text-sm font-semibold text-white">1</div>
+            <span class="hidden text-xs font-medium text-navy-700 sm:block">Basic Info</span>
+          </div>
+          <!-- Step 2 -->
+          <div class="flex flex-col items-center gap-1">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-warm-200 text-sm font-semibold text-navy-300">2</div>
+            <span class="hidden text-xs font-medium text-navy-300 sm:block">Experience</span>
+          </div>
+          <!-- Step 3 -->
+          <div class="flex flex-col items-center gap-1">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-warm-200 text-sm font-semibold text-navy-300">3</div>
+            <span class="hidden text-xs font-medium text-navy-300 sm:block">Commitment</span>
+          </div>
+          <!-- Step 4 -->
+          <div class="flex flex-col items-center gap-1">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-warm-200 text-sm font-semibold text-navy-300">4</div>
+            <span class="hidden text-xs font-medium text-navy-300 sm:block">Review &amp; Submit</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form card -->
+      <div class="rounded-2xl border border-warm-200 bg-white">
+        <div class="p-6 sm:p-8">
+
+          <!-- Section heading -->
+          <div class="space-y-6">
+            <div>
+              <h2 class="font-display text-2xl font-bold text-navy-700">Basic Information</h2>
+              <p class="mt-1 font-body text-sm text-navy-300">Tell us who you are. This helps us personalize your experience.</p>
+            </div>
+
+            <!-- Full Name -->
+            <div>
+              <label for="fullName" class="mb-1.5 block text-sm font-medium text-navy-700">Full Name *</label>
+              <input
+                type="text"
+                id="fullName"
+                name="fullName"
+                placeholder="e.g. Ada Lovelace"
+                class="w-full rounded-xl border border-warm-200 bg-white px-4 py-2.5 font-body text-sm text-navy-700 placeholder:text-warm-400 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+
+            <!-- Email -->
+            <div>
+              <label for="email" class="mb-1.5 block text-sm font-medium text-navy-700">Email *</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="you@example.com"
+                class="w-full rounded-xl border border-warm-200 bg-white px-4 py-2.5 font-body text-sm text-navy-700 placeholder:text-warm-400 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+
+            <!-- Phone (optional) -->
+            <div>
+              <label for="phone" class="mb-1.5 block text-sm font-medium text-navy-700">Phone (optional)</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="+1 (555) 123-4567"
+                class="w-full rounded-xl border border-warm-200 bg-white px-4 py-2.5 font-body text-sm text-navy-700 placeholder:text-warm-400 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+
+            <!-- Country -->
+            <div>
+              <label for="country" class="mb-1.5 block text-sm font-medium text-navy-700">Country *</label>
+              <input
+                type="text"
+                id="country"
+                name="country"
+                placeholder="e.g. United States"
+                class="w-full rounded-xl border border-warm-200 bg-white px-4 py-2.5 font-body text-sm text-navy-700 placeholder:text-warm-400 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+
+            <!-- LinkedIn URL (optional) -->
+            <div>
+              <label for="linkedinUrl" class="mb-1.5 block text-sm font-medium text-navy-700">LinkedIn URL (optional)</label>
+              <input
+                type="url"
+                id="linkedinUrl"
+                name="linkedinUrl"
+                placeholder="https://linkedin.com/in/yourprofile"
+                class="w-full rounded-xl border border-warm-200 bg-white px-4 py-2.5 font-body text-sm text-navy-700 placeholder:text-warm-400 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+          </div>
+
+          <!-- Navigation buttons -->
+          <div class="mt-8 flex items-center justify-between border-t border-warm-100 pt-6">
+            <!-- Empty left side (no Back on step 1) -->
+            <div></div>
+
+            <!-- Next button -->
+            <button
+              type="button"
+              class="inline-flex items-center gap-1 rounded-lg bg-teal-500 px-5 py-2 font-body text-sm font-semibold text-white transition-colors hover:bg-teal-600"
+            >
+              Next
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="bg-navy-700 text-warm-200">
+    <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <div class="flex flex-col items-center gap-8 md:flex-row md:justify-between">
+        <div class="text-center md:text-left">
+          <p class="font-display text-lg font-bold text-white">Day Learning</p>
+          <p class="mt-1 font-body text-sm text-warm-300">A THCO Company</p>
+        </div>
+
+        <nav class="flex flex-wrap justify-center gap-x-8 gap-y-3">
+          <a href="/about" class="font-body text-sm text-warm-300 transition-colors hover:text-white">About</a>
+          <a href="/tracks" class="font-body text-sm text-warm-300 transition-colors hover:text-white">Tracks</a>
+          <a href="/apply" class="font-body text-sm text-warm-300 transition-colors hover:text-white">Apply</a>
+          <a href="/privacy" class="font-body text-sm text-warm-300 transition-colors hover:text-white">Privacy</a>
+          <a href="/terms" class="font-body text-sm text-warm-300 transition-colors hover:text-white">Terms</a>
+        </nav>
+
+        <div class="flex items-center gap-4">
+          <a href="#" aria-label="Twitter" class="text-warm-400 transition-colors hover:text-teal-400">
+            <i data-lucide="twitter" class="h-5 w-5"></i>
+          </a>
+          <a href="#" aria-label="LinkedIn" class="text-warm-400 transition-colors hover:text-teal-400">
+            <i data-lucide="linkedin" class="h-5 w-5"></i>
+          </a>
+          <a href="#" aria-label="GitHub" class="text-warm-400 transition-colors hover:text-teal-400">
+            <i data-lucide="github" class="h-5 w-5"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="mt-10 border-t border-navy-600 pt-6 text-center">
+        <p class="font-body text-xs text-warm-400">&copy; 2026 Day Learning by THCO. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== SCRIPTS ===== -->
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // Mobile menu toggle
+    const mobileToggle = document.getElementById('mobile-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileBackdrop = document.getElementById('mobile-backdrop');
+    const menuIcon = document.getElementById('menu-icon');
+    const closeIcon = document.getElementById('close-icon');
+    let mobileOpen = false;
+
+    function toggleMobileMenu() {
+      mobileOpen = !mobileOpen;
+      if (mobileOpen) {
+        mobileMenu.classList.remove('translate-x-full');
+        mobileMenu.classList.add('translate-x-0');
+        mobileBackdrop.classList.remove('hidden');
+        menuIcon.classList.add('hidden');
+        closeIcon.classList.remove('hidden');
+      } else {
+        mobileMenu.classList.add('translate-x-full');
+        mobileMenu.classList.remove('translate-x-0');
+        mobileBackdrop.classList.add('hidden');
+        menuIcon.classList.remove('hidden');
+        closeIcon.classList.add('hidden');
+      }
+    }
+
+    mobileToggle.addEventListener('click', toggleMobileMenu);
+    mobileBackdrop.addEventListener('click', toggleMobileMenu);
+  </script>
+
+</body>
+</html>
