@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply font-body text-navy-800 bg-warm-50;
+  }
+
+  .dark body,
+  body.dark {
+    @apply bg-navy-800 text-warm-50;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold tracking-tight;
+  }
+}
+
+@layer components {
+  .container-narrow {
+    @apply max-w-5xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .container-wide {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-teal-500 to-teal-300;
+  }
+
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-sm border border-warm-200 rounded-2xl;
+  }
+
+  .dark .glass-card {
+    @apply bg-navy-700/80 border-navy-600;
+  }
+
+  /* Video embed container */
+  .video-container {
+    @apply relative w-full overflow-hidden rounded-xl;
+    padding-bottom: 56.25%; /* 16:9 */
+  }
+
+  .video-container iframe {
+    @apply absolute top-0 left-0 w-full h-full;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

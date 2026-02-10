@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Engineer Track | Day Learning</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwindcss.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { 50:'#E8EBF0',100:'#C5CBD6',200:'#8E9BB0',300:'#5C6E8A',400:'#2D4263',500:'#0F2440',600:'#0D1F37',700:'#0A1628',800:'#07101D',900:'#040A13',950:'#020509' },
+            teal: { 50:'#EDFCFA',100:'#D4F7F3',200:'#A8EFE7',300:'#6DE4D6',400:'#2DD4BF',500:'#14B8A6',600:'#0D9488',700:'#0A766C',800:'#085C54',900:'#064E47' },
+            amber: { 50:'#FFFBEB',100:'#FEF3C7',200:'#FDE68A',300:'#FCD34D',400:'#FBBF24',500:'#F59E0B',600:'#D97706',700:'#B45309',800:'#92400E',900:'#78350F' },
+            warm: { 50:'#FAFAF9',100:'#F5F5F4',200:'#E7E5E4',300:'#D6D3D1',400:'#A8A29E' },
+          },
+          fontFamily: {
+            display: ['system-ui','-apple-system','BlinkMacSystemFont','Segoe UI','sans-serif'],
+            body: ['system-ui','-apple-system','BlinkMacSystemFont','Segoe UI','sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="font-body text-navy-700 bg-white antialiased">
+
+  <!-- ===== NAVIGATION ===== -->
+  <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-warm-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-8">
+          <a href="index.html" class="flex items-center gap-2 text-navy-700 font-display font-bold text-xl">
+            <i data-lucide="graduation-cap" class="w-6 h-6 text-teal-500"></i>
+            Day Learning
+          </a>
+          <div class="hidden md:flex items-center gap-6">
+            <a href="tracks.html" class="text-navy-400 hover:text-navy-700 transition-colors text-sm font-medium">Tracks</a>
+            <a href="apply.html" class="text-navy-400 hover:text-navy-700 transition-colors text-sm font-medium">Apply</a>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <a href="sign-in.html" class="hidden sm:inline-block text-navy-400 hover:text-navy-700 transition-colors text-sm font-medium">Sign In</a>
+          <a href="apply.html" class="inline-flex items-center px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white text-sm font-semibold rounded-lg transition-colors">
+            Apply Now
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== HERO SECTION ===== -->
+  <section class="relative bg-navy-700 overflow-hidden">
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 right-1/4 w-80 h-80 bg-teal-400/10 rounded-full blur-3xl"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 bg-teal-500/15 border border-teal-500/30 text-teal-300 text-sm font-medium rounded-full px-4 py-1.5 mb-6">
+          <i data-lucide="code-2" class="w-4 h-4"></i>
+          Enrolling Now
+        </div>
+        <h1 class="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+          AI Engineer Track
+        </h1>
+        <p class="text-navy-200 text-lg md:text-xl leading-relaxed mb-10 max-w-2xl">
+          Master the skills to build, deploy, and scale AI-powered applications. From prompt engineering to production systems, learn what it takes to become a professional AI engineer.
+        </p>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+          <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+            <div class="text-3xl font-bold text-white mb-1">4</div>
+            <div class="text-navy-300 text-sm">Modules</div>
+          </div>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+            <div class="text-3xl font-bold text-white mb-1">12+</div>
+            <div class="text-navy-300 text-sm">Lessons</div>
+          </div>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+            <div class="text-3xl font-bold text-white mb-1">4</div>
+            <div class="text-navy-300 text-sm">Assessments</div>
+          </div>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+            <div class="text-3xl font-bold text-white mb-1">1</div>
+            <div class="text-navy-300 text-sm">Final Project</div>
+          </div>
+        </div>
+
+        <a href="apply.html" class="inline-flex items-center gap-2 px-8 py-3.5 bg-teal-500 hover:bg-teal-600 text-white font-semibold rounded-lg transition-colors text-lg">
+          Apply Now
+          <i data-lucide="arrow-right" class="w-5 h-5"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WHAT YOU'LL LEARN ===== -->
+  <section class="bg-warm-50 py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center mb-12">
+        <h2 class="font-display text-3xl md:text-4xl font-bold text-navy-700 mb-4">What You'll Learn</h2>
+        <p class="text-navy-400 text-lg">A comprehensive curriculum designed to take you from fundamentals to production-ready AI engineering.</p>
+      </div>
+      <div class="max-w-3xl mx-auto">
+        <ul class="grid sm:grid-cols-1 gap-4">
+          <li class="flex items-start gap-3 bg-white rounded-xl p-4 border border-warm-200">
+            <i data-lucide="check-circle" class="w-5 h-5 text-teal-500 mt-0.5 shrink-0"></i>
+            <span class="text-navy-600">Build with LLM APIs and SDKs (OpenAI, Anthropic, and more)</span>
+          </li>
+          <li class="flex items-start gap-3 bg-white rounded-xl p-4 border border-warm-200">
+            <i data-lucide="check-circle" class="w-5 h-5 text-teal-500 mt-0.5 shrink-0"></i>
+            <span class="text-navy-600">Create RAG systems for knowledge-powered applications</span>
+          </li>
+          <li class="flex items-start gap-3 bg-white rounded-xl p-4 border border-warm-200">
+            <i data-lucide="check-circle" class="w-5 h-5 text-teal-500 mt-0.5 shrink-0"></i>
+            <span class="text-navy-600">Design and build AI agents with tool use and function calling</span>
+          </li>
+          <li class="flex items-start gap-3 bg-white rounded-xl p-4 border border-warm-200">
+            <i data-lucide="check-circle" class="w-5 h-5 text-teal-500 mt-0.5 shrink-0"></i>
+            <span class="text-navy-600">Architect multi-agent systems for complex workflows</span>
+          </li>
+          <li class="flex items-start gap-3 bg-white rounded-xl p-4 border border-warm-200">
+            <i data-lucide="check-circle" class="w-5 h-5 text-teal-500 mt-0.5 shrink-0"></i>
+            <span class="text-navy-600">Deploy, scale, and monitor production AI systems</span>
+          </li>
+          <li class="flex items-start gap-3 bg-white rounded-xl p-4 border border-warm-200">
+            <i data-lucide="check-circle" class="w-5 h-5 text-teal-500 mt-0.5 shrink-0"></i>
+            <span class="text-navy-600">Evaluate and test AI outputs systematically</span>
+          </li>
+          <li class="flex items-start gap-3 bg-white rounded-xl p-4 border border-warm-200">
+            <i data-lucide="check-circle" class="w-5 h-5 text-teal-500 mt-0.5 shrink-0"></i>
+            <span class="text-navy-600">Optimize costs for AI-powered products</span>
+          </li>
+          <li class="flex items-start gap-3 bg-white rounded-xl p-4 border border-warm-200">
+            <i data-lucide="check-circle" class="w-5 h-5 text-teal-500 mt-0.5 shrink-0"></i>
+            <span class="text-navy-600">Apply prompt engineering techniques at a professional level</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CURRICULUM ===== -->
+  <section class="bg-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center mb-14">
+        <h2 class="font-display text-3xl md:text-4xl font-bold text-navy-700 mb-4">Curriculum</h2>
+        <p class="text-navy-400 text-lg">4 modules, 12 lessons, each building on the last.</p>
+      </div>
+
+      <div class="max-w-4xl mx-auto space-y-8">
+
+        <!-- Module 1 -->
+        <div class="bg-white border border-warm-200 rounded-2xl overflow-hidden shadow-sm">
+          <div class="p-6 md:p-8">
+            <div class="flex items-start gap-4 mb-6">
+              <span class="inline-flex items-center justify-center w-10 h-10 bg-teal-100 text-teal-700 font-bold text-sm rounded-lg shrink-0">M1</span>
+              <div>
+                <h3 class="font-display text-xl font-bold text-navy-700">Foundations of AI-Assisted Development</h3>
+                <p class="text-navy-400 mt-1">Understand the AI engineering landscape, set up your development environment, and master the fundamentals of prompt engineering.</p>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-center gap-3 bg-warm-50 rounded-lg p-3">
+                <i data-lucide="play-circle" class="w-5 h-5 text-navy-300 shrink-0"></i>
+                <span class="text-navy-600 flex-1">The AI Engineering Mindset</span>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-medium bg-navy-50 text-navy-400 px-2 py-0.5 rounded">video</span>
+                  <span class="text-xs font-medium bg-navy-50 text-navy-400 px-2 py-0.5 rounded">reading</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 bg-warm-50 rounded-lg p-3">
+                <i data-lucide="play-circle" class="w-5 h-5 text-navy-300 shrink-0"></i>
+                <span class="text-navy-600 flex-1">Setting Up Your AI Toolkit</span>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-medium bg-navy-50 text-navy-400 px-2 py-0.5 rounded">video</span>
+                  <span class="text-xs font-medium bg-navy-50 text-navy-400 px-2 py-0.5 rounded">reading</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 bg-warm-50 rounded-lg p-3">
+                <i data-lucide="play-circle" class="w-5 h-5 text-navy-300 shrink-0"></i>
+                <span class="text-navy-600 flex-1">Prompt Engineering for Developers</span>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-medium bg-navy-50 text-navy-400 px-2 py-0.5 rounded">video</span>
+                  <span class="text-xs font-medium bg-navy-50 text-navy-400 px-2 py-0.5 rounded">reading</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 border-2 border-dashed border-amber-300 bg-amber-50 rounded-lg p-3">
+                <i data-lucide="clipboard-check" class="w-5 h-5 text-amber-500 shrink-0"></i>
+                <span class="text-navy-600 font-medium flex-1">Assessment: Build a CLI tool using AI</span>
+                <span class="text-xs font-medium bg-amber-100 text-amber-700 px-2 py-0.5 rounded">assessment</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Module 2 -->
+        <div class="bg-white border border-warm-200 rounded-2xl overflow-hidden shadow-sm">
+          <div class="p-6 md:p-8">
+            <div class="flex items-start gap-4 mb-6">
+              <span class="inline-flex items-center justify-center w-10 h-10 bg-teal-100 text-teal-700 font-bold text-sm rounded-lg shrink-0">M2</span>
+              <div>
+                <h3 class="font-display text-xl font-bold text-navy-700">Building with LLMs</h3>
+                <p class="text-navy-400 mt-1">Dive deep into LLM APIs and SDKs, build AI-powered features, and create retrieval-augmented generation systems.</p>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-center gap-3 bg-warm-50 rounded-lg p-3">
+                <i data-lucide="play-circle" class="w-5 h-5 text-navy-300 shrink-0"></i>
+                <span class="text-navy-600 flex-1">APIs & SDKs</span>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-medium bg-navy-50 text-navy-400 px-2 py-0.5 rounded">video</span>
+                  <span class="text-xs font-medium bg-navy-50 text-navy-400 px-2 py-0.5 rounded">reading</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 bg-warm-50 rounded-lg p-3">
+                <i data-lucide="play-circle" class="w-5 h-5 text-navy-300 shrink-0"></i>
+                <span class="text-navy-600 flex-1">Building AI Features into Apps</span>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-medium bg-navy-50 text-navy-400 px-2 py-0.5 rounded">video</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 bg-warm-50 rounded-lg p-3">
+                <i data-lucide="play-circle" class="w-5 h-5 text-navy-300 shrink-0"></i>
+                <span class="text-navy-600 flex-1">RAG & Knowledge Systems</span>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-medium bg-navy-50 text-navy-400 px-2 py-0.5 rounded">video</span>
+                  <span class="text-xs font-medium bg-navy-50 text-navy-400 px-2 py-0.5 rounded">reading</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 border-2 border-dashed border-amber-300 bg-amber-50 rounded-lg p-3">
+                <i data-lucide="clipboard-check" class="w-5 h-5 text-amber-500 shrink-0"></i>
+                <span class="text-navy-600 font-medium flex-1">Assessment: Build a RAG application</span>
+                <span class="text-xs font-medium bg-amber-100 text-amber-700 px-2 py-0.5 rounded">assessment</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Module 3 -->
+        <div class="bg-white border border-warm-200 rounded-2xl overflow-hidden shadow-sm">
+          <div class="p-6 md:p-8">
+            <div class="flex items-start gap-4 mb-6">
+              <span class="inline-flex items-center justify-center w-10 h-10 bg-teal-100 text-teal-700 font-bold text-sm rounded-lg shrink-0">M3</span>
+              <div>
+                <h3 class="font-display text-xl font-bold text-navy-700">AI Agents & Automation</h3>
+                <p class="text-navy-400 mt-1">Learn to design autonomous AI agents, implement tool use and function calling, and orchestrate multi-agent systems.</p>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-center gap-3 bg-warm-50 rounded-lg p-3">
+                <i data-lucide="play-circle" class="w-5 h-5 text-navy-300 shrink-0"></i>
+                <span class="text-navy-600 flex-1">Agent Architecture</span>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-medium bg-navy-50 text-navy-400 px-2 py-0.5 rounded">video</span>
+                  <span class="text-xs font-medium bg-navy-50 text-navy-400 px-2 py-0.5 rounded">reading</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 bg-warm-50 rounded-lg p-3">
+                <i data-lucide="play-circle" class="w-5 h-5 text-navy-300 shrink-0"></i>
+                <span class="text-navy-600 flex-1">Tool Use & Function Calling</span>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-medium bg-navy-50 text-navy-400 px-2 py-0.5 rounded">video</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 bg-warm-50 rounded-lg p-3">
+                <i data-lucide="play-circle" class="w-5 h-5 text-navy-300 shrink-0"></i>
+                <span class="text-navy-600 flex-1">Multi-Agent Systems</span>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-medium bg-navy-50 text-navy-400 px-2 py-0.5 rounded">video</span>
+                  <span class="text-xs font-medium bg-navy-50 text-navy-400 px-2 py-0.5 rounded">reading</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 border-2 border-dashed border-amber-300 bg-amber-50 rounded-lg p-3">
+                <i data-lucide="clipboard-check" class="w-5 h-5 text-amber-500 shrink-0"></i>
+                <span class="text-navy-600 font-medium flex-1">Assessment: Build an AI agent</span>
+                <span class="text-xs font-medium bg-amber-100 text-amber-700 px-2 py-0.5 rounded">assessment</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Module 4 -->
+        <div class="bg-white border border-warm-200 rounded-2xl overflow-hidden shadow-sm">
+          <div class="p-6 md:p-8">
+            <div class="flex items-start gap-4 mb-6">
+              <span class="inline-flex items-center justify-center w-10 h-10 bg-teal-100 text-teal-700 font-bold text-sm rounded-lg shrink-0">M4</span>
+              <div>
+                <h3 class="font-display text-xl font-bold text-navy-700">Production AI Systems</h3>
+                <p class="text-navy-400 mt-1">Take your AI applications to production with deployment strategies, evaluation frameworks, and cost optimization techniques.</p>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-center gap-3 bg-warm-50 rounded-lg p-3">
+                <i data-lucide="play-circle" class="w-5 h-5 text-navy-300 shrink-0"></i>
+                <span class="text-navy-600 flex-1">Deployment & Scaling</span>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-medium bg-navy-50 text-navy-400 px-2 py-0.5 rounded">video</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 bg-warm-50 rounded-lg p-3">
+                <i data-lucide="play-circle" class="w-5 h-5 text-navy-300 shrink-0"></i>
+                <span class="text-navy-600 flex-1">Evaluation & Testing</span>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-medium bg-navy-50 text-navy-400 px-2 py-0.5 rounded">video</span>
+                  <span class="text-xs font-medium bg-navy-50 text-navy-400 px-2 py-0.5 rounded">reading</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 bg-warm-50 rounded-lg p-3">
+                <i data-lucide="play-circle" class="w-5 h-5 text-navy-300 shrink-0"></i>
+                <span class="text-navy-600 flex-1">Cost Optimization</span>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-medium bg-navy-50 text-navy-400 px-2 py-0.5 rounded">video</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 border-2 border-dashed border-amber-300 bg-amber-50 rounded-lg p-3">
+                <i data-lucide="clipboard-check" class="w-5 h-5 text-amber-500 shrink-0"></i>
+                <span class="text-navy-600 font-medium flex-1">Assessment: Deploy an AI product</span>
+                <span class="text-xs font-medium bg-amber-100 text-amber-700 px-2 py-0.5 rounded">assessment</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TIME COMMITMENT ===== -->
+  <section class="bg-warm-50 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-2xl mx-auto text-center">
+        <div class="inline-flex items-center justify-center w-14 h-14 bg-teal-100 rounded-2xl mb-6">
+          <i data-lucide="clock" class="w-7 h-7 text-teal-600"></i>
+        </div>
+        <h2 class="font-display text-3xl md:text-4xl font-bold text-navy-700 mb-4">Time Commitment</h2>
+        <p class="text-navy-400 text-xl">10-15 hours per week, self-paced</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WHAT YOU'LL BUILD ===== -->
+  <section class="bg-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center mb-12">
+        <h2 class="font-display text-3xl md:text-4xl font-bold text-navy-700 mb-4">What You'll Build</h2>
+        <p class="text-navy-400 text-lg">Hands-on projects that become part of your professional portfolio.</p>
+      </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+        <div class="bg-warm-50 border border-warm-200 rounded-xl p-6 text-center">
+          <div class="inline-flex items-center justify-center w-12 h-12 bg-teal-100 rounded-xl mb-4">
+            <i data-lucide="file-code-2" class="w-6 h-6 text-teal-600"></i>
+          </div>
+          <h3 class="font-display font-bold text-navy-700 mb-2">AI-Powered CLI Tool</h3>
+          <p class="text-navy-400 text-sm">A command-line application powered by large language models.</p>
+        </div>
+        <div class="bg-warm-50 border border-warm-200 rounded-xl p-6 text-center">
+          <div class="inline-flex items-center justify-center w-12 h-12 bg-teal-100 rounded-xl mb-4">
+            <i data-lucide="file-code-2" class="w-6 h-6 text-teal-600"></i>
+          </div>
+          <h3 class="font-display font-bold text-navy-700 mb-2">RAG Application</h3>
+          <p class="text-navy-400 text-sm">A knowledge-powered app with retrieval-augmented generation.</p>
+        </div>
+        <div class="bg-warm-50 border border-warm-200 rounded-xl p-6 text-center">
+          <div class="inline-flex items-center justify-center w-12 h-12 bg-teal-100 rounded-xl mb-4">
+            <i data-lucide="file-code-2" class="w-6 h-6 text-teal-600"></i>
+          </div>
+          <h3 class="font-display font-bold text-navy-700 mb-2">Autonomous AI Agent</h3>
+          <p class="text-navy-400 text-sm">An agent with tool use, function calling, and decision-making.</p>
+        </div>
+        <div class="bg-warm-50 border border-warm-200 rounded-xl p-6 text-center">
+          <div class="inline-flex items-center justify-center w-12 h-12 bg-teal-100 rounded-xl mb-4">
+            <i data-lucide="file-code-2" class="w-6 h-6 text-teal-600"></i>
+          </div>
+          <h3 class="font-display font-bold text-navy-700 mb-2">Production AI Product</h3>
+          <p class="text-navy-400 text-sm">A deployed, monitored, and cost-optimized AI application.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== AFTER YOU GRADUATE ===== -->
+  <section class="bg-navy-700 py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center mb-12">
+        <h2 class="font-display text-3xl md:text-4xl font-bold text-white mb-4">After You Graduate</h2>
+        <p class="text-navy-200 text-lg">Your journey doesn't end with the last module. Here's what comes next.</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+          <div class="inline-flex items-center justify-center w-12 h-12 bg-teal-500/15 rounded-xl mb-4">
+            <i data-lucide="briefcase" class="w-6 h-6 text-teal-400"></i>
+          </div>
+          <h3 class="font-display font-bold text-white text-lg mb-2">Career-Ready Portfolio</h3>
+          <p class="text-navy-300 text-sm leading-relaxed">Graduate with 4 production-quality projects that demonstrate your AI engineering skills to employers and clients.</p>
+        </div>
+        <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+          <div class="inline-flex items-center justify-center w-12 h-12 bg-teal-500/15 rounded-xl mb-4">
+            <i data-lucide="users" class="w-6 h-6 text-teal-400"></i>
+          </div>
+          <h3 class="font-display font-bold text-white text-lg mb-2">Alumni Community</h3>
+          <p class="text-navy-300 text-sm leading-relaxed">Join a network of AI engineers for ongoing collaboration, job referrals, and knowledge sharing.</p>
+        </div>
+        <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+          <div class="inline-flex items-center justify-center w-12 h-12 bg-teal-500/15 rounded-xl mb-4">
+            <i data-lucide="award" class="w-6 h-6 text-teal-400"></i>
+          </div>
+          <h3 class="font-display font-bold text-white text-lg mb-2">Verified Certificate</h3>
+          <p class="text-navy-300 text-sm leading-relaxed">Earn a verified certificate of completion that validates your AI engineering expertise to the industry.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA SECTION ===== -->
+  <section class="bg-gradient-to-br from-teal-500 to-teal-600 py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="font-display text-3xl md:text-4xl font-bold text-white mb-4">Ready to Become an AI Engineer?</h2>
+        <p class="text-teal-100 text-lg mb-8 max-w-xl mx-auto">Applications are open. Spots are limited. Start your journey to mastering AI engineering today.</p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="apply.html" class="inline-flex items-center gap-2 px-8 py-3.5 bg-white hover:bg-warm-50 text-teal-700 font-semibold rounded-lg transition-colors text-lg">
+            Apply Now
+            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+          </a>
+          <a href="tracks.html" class="inline-flex items-center gap-2 px-8 py-3.5 bg-teal-400/20 hover:bg-teal-400/30 text-white font-semibold rounded-lg transition-colors text-lg border border-white/20">
+            View All Tracks
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="bg-navy-700 border-t border-white/10 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <a href="index.html" class="flex items-center gap-2 text-white font-display font-bold text-lg mb-4">
+            <i data-lucide="graduation-cap" class="w-5 h-5 text-teal-400"></i>
+            Day Learning
+          </a>
+          <p class="text-navy-300 text-sm leading-relaxed">Hands-on technical education for the next generation of builders.</p>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-3">Program</h4>
+          <ul class="space-y-2">
+            <li><a href="tracks.html" class="text-navy-300 hover:text-white text-sm transition-colors">Tracks</a></li>
+            <li><a href="apply.html" class="text-navy-300 hover:text-white text-sm transition-colors">Apply</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-3">Company</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-navy-300 hover:text-white text-sm transition-colors">About</a></li>
+            <li><a href="#" class="text-navy-300 hover:text-white text-sm transition-colors">Blog</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-3">Legal</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-navy-300 hover:text-white text-sm transition-colors">Privacy Policy</a></li>
+            <li><a href="#" class="text-navy-300 hover:text-white text-sm transition-colors">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <p class="text-navy-300 text-sm">&copy; 2026 Day Learning. All rights reserved.</p>
+        <div class="flex items-center gap-4">
+          <a href="#" class="text-navy-300 hover:text-white transition-colors">
+            <i data-lucide="twitter" class="w-5 h-5"></i>
+          </a>
+          <a href="#" class="text-navy-300 hover:text-white transition-colors">
+            <i data-lucide="github" class="w-5 h-5"></i>
+          </a>
+          <a href="#" class="text-navy-300 hover:text-white transition-colors">
+            <i data-lucide="linkedin" class="w-5 h-5"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>
